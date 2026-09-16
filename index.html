@@ -2,16 +2,24 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<!-- 🔒 BOT-SCHUTZ: Seite soll nicht in Suchmaschinen erscheinen -->
+<!-- 🔒 BOT-SCHUTZ -->
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
-<meta name="googlebot" content="noindex, nofollow">
-<meta name="bingbot" content="noindex, nofollow">
+
+<!-- 📱 iOS Web-App -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wochenblatt">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='white' font-family='sans-serif'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
 
 <title>Wochenblatt – Archiv</title>
 <script>
-/* Theme möglichst früh setzen, damit kein Flackern entsteht */
 (function () {
   try {
     var t = localStorage.getItem("wochenblattTheme");
@@ -22,15 +30,15 @@
 })();
 </script>
 <style>
-  /* ---------- Standard (hell) ---------- */
   :root {
     --bg: #f4f6fa; --surface: #ffffff; --surface-2: #f0f3f8;
     --border: #e2e7f0; --text: #1a1f2b; --text-dim: #667085;
     --accent: #2563eb; --accent-soft: rgba(37,99,235,0.10);
     --today: #0e9f6e; --today-soft: rgba(14,159,110,0.10);
     --shadow: 0 4px 20px rgba(20,30,60,0.08); --radius: 14px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
-  /* ---------- System-Dark ---------- */
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #0f1115; --surface: #181b22; --surface-2: #1f232c;
@@ -40,7 +48,6 @@
       --shadow: 0 4px 20px rgba(0,0,0,0.35);
     }
   }
-  /* ---------- Manueller Override ---------- */
   :root[data-theme="light"] {
     --bg: #f4f6fa; --surface: #ffffff; --surface-2: #f0f3f8;
     --border: #e2e7f0; --text: #1a1f2b; --text-dim: #667085;
@@ -56,14 +63,15 @@
     --shadow: 0 4px 20px rgba(0,0,0,0.35);
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg); color: var(--text); line-height: 1.5;
-    padding: 24px 16px 60px;
+    padding: calc(24px + var(--safe-top)) 16px calc(60px + var(--safe-bottom));
     transition: background .3s, color .3s;
+    -webkit-text-size-adjust: 100%;
   }
 
   .wrap { max-width: 900px; margin: 0 auto; }
@@ -100,7 +108,10 @@
     transition: background .3s, border-color .3s;
   }
 
-  .date-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  /* ---------- Schnellzugriff-Steuerung ---------- */
+  .date-row {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
   label { font-size: 0.9rem; color: var(--text-dim); }
 
   input[type="date"], select {
@@ -108,6 +119,7 @@
     border: 1px solid var(--border); border-radius: 10px;
     padding: 10px 12px; font-size: 0.95rem;
     font-family: inherit; outline: none;
+    -webkit-appearance: none; appearance: none;
   }
   input[type="date"]:focus, select:focus {
     border-color: var(--accent);
@@ -118,9 +130,30 @@
     background: var(--accent); color: #fff; border: none;
     border-radius: 10px; padding: 10px 16px; font-size: 0.95rem;
     font-weight: 600; cursor: pointer; font-family: inherit;
+    -webkit-appearance: none; appearance: none;
   }
   .btn:hover { opacity: .9; }
   .btn:active { transform: scale(.98); }
+
+  /* Sekundär-Buttons: dezenter Look für -7 / +7 / Heute */
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-weight: 600;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .nav-buttons {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    align-items: center;
+  }
 
   .week-cards {
     display: grid;
@@ -171,7 +204,25 @@
   }
   a.pdf-link:hover { text-decoration: underline; }
 
-  /* ---------- Mobile: Tabelle → Karten ---------- */
+  /* iOS-Hinweis-Banner */
+  .ios-hint {
+    display: none;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    position: relative;
+  }
+  .ios-hint strong { color: var(--accent); }
+  .ios-hint-close {
+    position: absolute; top: 8px; right: 10px;
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1.2rem; cursor: pointer; padding: 4px 8px;
+    line-height: 1;
+  }
+
   @media (max-width: 640px) {
     .table-scroll { overflow: visible; }
     table, thead, tbody, tr, td { display: block; }
@@ -206,11 +257,20 @@
       padding-bottom: 10px; margin-bottom: 6px; font-size: 1.05rem;
     }
     .kw-badge { min-width: 0; }
+
+    /* Buttons in voller Breite, mobil gut tippbar */
+    .nav-buttons { width: 100%; }
+    .nav-buttons .btn { flex: 1; min-width: 0; padding: 12px 8px; text-align: center; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <div class="ios-hint" id="iosHint">
+    <button class="ios-hint-close" id="iosHintClose" aria-label="Schließen">×</button>
+    <strong>📲 Tipp:</strong> Tippe auf <strong>Teilen</strong> (□↑) → <strong>„Zum Home-Bildschirm"</strong>, um die Seite als App zu installieren.
+  </div>
 
   <header>
     <div class="header-inner">
@@ -227,7 +287,11 @@
     <div class="date-row">
       <label for="dateInput">Beliebiges Datum:</label>
       <input type="date" id="dateInput">
-      <button class="btn" id="todayBtn" type="button">Heute</button>
+      <button class="btn btn-secondary" id="todayBtn" type="button">Heute</button>
+    </div>
+    <div class="nav-buttons" style="margin-top:10px;">
+      <button class="btn btn-secondary" id="prevWeekBtn" type="button">← 7 Tage</button>
+      <button class="btn btn-secondary" id="nextWeekBtn" type="button">7 Tage →</button>
     </div>
     <div class="week-cards" id="weekCards"></div>
   </div>
@@ -252,7 +316,6 @@
 </div>
 
 <script>
-/* ---------- Datums-Helfer (ISO 8601) ---------- */
 function isoWeek1Monday(year) {
   var jan4 = new Date(year, 0, 4);
   var day = (jan4.getDay() + 6) % 7;
@@ -310,15 +373,16 @@ function dateFromInput(value) {
   return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
 }
 
-/* ---------- DOM ---------- */
-var dateInput   = document.getElementById("dateInput");
-var weekCards   = document.getElementById("weekCards");
-var yearSelect  = document.getElementById("yearSelect");
-var yearBody    = document.getElementById("yearBody");
-var todayBtn    = document.getElementById("todayBtn");
-var themeToggle = document.getElementById("themeToggle");
+var dateInput     = document.getElementById("dateInput");
+var weekCards     = document.getElementById("weekCards");
+var yearSelect    = document.getElementById("yearSelect");
+var yearBody      = document.getElementById("yearBody");
+var todayBtn      = document.getElementById("todayBtn");
+var prevWeekBtn   = document.getElementById("prevWeekBtn");
+var nextWeekBtn   = document.getElementById("nextWeekBtn");
+var themeToggle   = document.getElementById("themeToggle");
 
-/* ---------- Theme-Switch ---------- */
+/* ---------- Theme ---------- */
 function effectiveTheme() {
   var pref = "auto";
   try { pref = localStorage.getItem("wochenblattTheme") || "auto"; } catch (e) {}
@@ -328,8 +392,6 @@ function effectiveTheme() {
 
 function updateToggleIcon(theme) {
   themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
-  themeToggle.setAttribute("aria-label",
-    theme === "dark" ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln");
 }
 
 function setTheme(theme) {
@@ -344,22 +406,10 @@ function setTheme(theme) {
 }
 
 themeToggle.addEventListener("click", function () {
-  var next = effectiveTheme() === "dark" ? "light" : "dark";
-  setTheme(next);
+  setTheme(effectiveTheme() === "dark" ? "light" : "dark");
 });
 
-if (window.matchMedia) {
-  var mq = window.matchMedia("(prefers-color-scheme: dark)");
-  var mqListener = function () {
-    var pref = "auto";
-    try { pref = localStorage.getItem("wochenblattTheme") || "auto"; } catch (e) {}
-    if (pref === "auto") updateToggleIcon(effectiveTheme());
-  };
-  if (mq.addEventListener) mq.addEventListener("change", mqListener);
-  else if (mq.addListener) mq.addListener(mqListener);
-}
-
-/* ---------- Wochen-Karten ---------- */
+/* ---------- Schnellzugriff-Karten ---------- */
 function renderWeekCards(baseDate) {
   var cards = [
     { label: "Letzte Woche",   offset: -7 },
@@ -387,6 +437,20 @@ function renderWeekCards(baseDate) {
       '<div class="range">' + formatDate(mon) + " – " + formatDate(sun) + '</div>';
     weekCards.appendChild(a);
   });
+}
+
+/* Aktuelles Basisdatum aus dem Feld, mit Fallback auf heute */
+function getBaseDate() {
+  if (dateInput.value) return dateFromInput(dateInput.value);
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  return t;
+}
+
+function shiftBaseDate(days) {
+  var base = getBaseDate();
+  base.setDate(base.getDate() + days);
+  dateInput.value = toInputValue(base);
+  renderWeekCards(base);
 }
 
 /* ---------- Jahres-Tabelle ---------- */
@@ -422,12 +486,15 @@ todayBtn.addEventListener("click", function () {
   dateInput.value = toInputValue(today);
   renderWeekCards(today);
   var y = today.getFullYear();
-  var has = false;
   for (var i = 0; i < yearSelect.options.length; i++) {
-    if (parseInt(yearSelect.options[i].value, 10) === y) { has = true; break; }
+    if (parseInt(yearSelect.options[i].value, 10) === y) {
+      yearSelect.value = y; renderYear(y); break;
+    }
   }
-  if (has) { yearSelect.value = y; renderYear(y); }
 });
+
+prevWeekBtn.addEventListener("click", function () { shiftBaseDate(-7); });
+nextWeekBtn.addEventListener("click", function () { shiftBaseDate(7); });
 
 yearSelect.addEventListener("change", function () {
   renderYear(parseInt(yearSelect.value, 10));
@@ -458,6 +525,21 @@ yearSelect.addEventListener("change", function () {
   renderYear(startAt);
   dateInput.value = toInputValue(now);
   renderWeekCards(now);
+
+  /* iOS-Hinweis-Banner */
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  var isStandalone = window.navigator.standalone === true
+    || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  var hintDismissed = false;
+  try { hintDismissed = localStorage.getItem("wochenblattHintDismissed") === "1"; } catch (e) {}
+
+  if (isIOS && !isStandalone && !hintDismissed) {
+    document.getElementById("iosHint").style.display = "block";
+  }
+  document.getElementById("iosHintClose").addEventListener("click", function () {
+    document.getElementById("iosHint").style.display = "none";
+    try { localStorage.setItem("wochenblattHintDismissed", "1"); } catch (e) {}
+  });
 })();
 </script>
 </body>
